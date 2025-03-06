@@ -17,11 +17,14 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { createCompanySchema, CreateCompanySchema } from "@/schemas/forms/form-1.schema"
 import { Textarea } from "@/components/ui/textarea"
 import { useState } from "react"
+import { UploadBanner } from "../upload/cropper-and-dialog"
+import { useCompanyStore } from "@/hooks/use-company"
 
 export function Form1() {
 
-    const [socialLinksInput, setSocialLinksInput] = useState(""); // Estado local para el input de servicio
+    const { setShowPreview, setCompany } = useCompanyStore()
 
+    const [socialLinksInput, setSocialLinksInput] = useState(""); // Estado local para el input de servicio
 
     const addSocialLink = () => {
         const currentServices = form.getValues("socialLinks");
@@ -53,8 +56,21 @@ export function Form1() {
     })
 
 
-    function onSubmit(values: CreateCompanySchema) {
-        console.log(values)
+    function onShowPreview() {
+        if (!form.formState.isValid) return
+        setCompany({
+            name: form.getValues("name"),
+            description: form.getValues("description"),
+            industry: form.getValues("industry"),
+            phone: form.getValues("phone"),
+            address: form.getValues("address"),
+            website: form.getValues("website"),
+            isVerified: form.getValues("isVerified"),
+            socialLinks: form.getValues("socialLinks"),
+            logoUrl: form.getValues("logoUrl"),
+            bannerUrl: form.getValues("bannerUrl"),
+        })
+        setShowPreview(true)
     }
 
 
@@ -69,62 +85,87 @@ export function Form1() {
             </CardHeader>
             <Form {...form}>
                 <form
-                    onSubmit={form.handleSubmit(onSubmit)}
+                    onSubmit={form.handleSubmit(onShowPreview)}
                 >
                     <CardContent>
                         <div className="grid w-full items-center gap-4 space-y-2">
+                            <div className="grid grid-cols-2 gap-x-4">
+                                <FormField
+                                    control={form.control}
+                                    name="name"
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormLabel>Nombre de la empresa</FormLabel>
+                                            <FormControl>
+                                                <Input placeholder="Ejm: ShadCN Inc." {...field} />
+                                            </FormControl>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+                                <FormField
+                                    control={form.control}
+                                    name="industry"
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormLabel>Industria de la compañía</FormLabel>
+                                            <FormControl>
+                                                <Input placeholder="Ejm: ShadCN Inc." {...field} />
+                                            </FormControl>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+                            </div>
                             <FormField
                                 control={form.control}
-                                name="name"
+                                name="description"
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel>Nombre de la empresa</FormLabel>
+                                        <FormLabel>Descripción</FormLabel>
                                         <FormControl>
-                                            <Input placeholder="Ejm: ShadCN Inc." {...field} />
+                                            <Textarea
+                                                placeholder="Escribe una breve descripción..."
+                                                className="resize-none h-24"
+                                                {...field}
+                                            />
                                         </FormControl>
                                         <FormMessage />
                                     </FormItem>
                                 )}
                             />
-                            <FormField
-                                control={form.control}
-                                name="industry"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel>Industria de la compañía</FormLabel>
-                                        <FormControl>
-                                            <Input placeholder="Ejm: ShadCN Inc." {...field} />
-                                        </FormControl>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
-                            <FormField
-                                control={form.control}
-                                name="website"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel>Sitio web de la compañía</FormLabel>
-                                        <FormControl>
-                                            <Input placeholder="Ejm: ShadCN Inc." {...field} />
-                                        </FormControl>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
-                            <FormField
-                                control={form.control}
-                                name="phone"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel>Telefono de la compañía</FormLabel>
-                                        <FormControl>
-                                            <Input placeholder="Ejm: ShadCN Inc." {...field} />
-                                        </FormControl>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
+                            <div className="grid gap-6 my-3 md:grid-cols-2">
+                                <UploadBanner form={form} />
+                                <UploadBanner form={form} />
+                            </div>
+                            <div className="grid gap-6 my-3 md:grid-cols-2">
+                                <FormField
+                                    control={form.control}
+                                    name="website"
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormLabel>Sitio web de la compañía</FormLabel>
+                                            <FormControl>
+                                                <Input placeholder="Ejm: ShadCN Inc." {...field} />
+                                            </FormControl>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+                                <FormField
+                                    control={form.control}
+                                    name="phone"
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormLabel>Telefono de la compañía</FormLabel>
+                                            <FormControl>
+                                                <Input placeholder="Ejm: ShadCN Inc." {...field} />
+                                            </FormControl>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+                            </div>
                             <FormField
                                 control={form.control}
                                 name="address"
@@ -178,28 +219,14 @@ export function Form1() {
                                 )}
                             />
 
-                            <FormField
-                                control={form.control}
-                                name="description"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel>Descripción</FormLabel>
-                                        <FormControl>
-                                            <Textarea
-                                                placeholder="Escribe una breve descripción..."
-                                                className="resize-none h-24"
-                                                {...field}
-                                            />
-                                        </FormControl>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
+
                         </div>
 
                     </CardContent>
                     <CardFooter className="flex justify-between">
-                        <Button>Crear preview</Button>
+                        <Button
+                            disabled={!form.formState.isValid}
+                        >Crear preview</Button>
 
                     </CardFooter>
                 </form>

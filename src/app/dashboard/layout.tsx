@@ -33,7 +33,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                         <ToggleTheme />
                     </div>
                 </header>
-                <div className="gap-4 p-4 pt-0">
+                <div className="gap-6 py-4 px-16 pt-0">
                     {children}
                 </div>
             </SidebarInset>
