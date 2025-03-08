@@ -1,5 +1,5 @@
 import { CreateCompanySchema } from '@/schemas/forms/form-1.schema';
-import { useCallback, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { ReactCropperElement } from 'react-cropper';
 import { UseFormReturn } from 'react-hook-form';
 import { toast } from "sonner"
@@ -95,6 +95,13 @@ export const useUploadBanner = ({ form }: Props) => {
         );
     }, [toast, form]);
 
+    // limpiar memoria
+    useEffect(() => {
+        return () => {
+            if (croppedImage) URL.revokeObjectURL(croppedImage)
+        }
+    }, [croppedImage])
+
     const handleAcceptCrop = () => {
         if (croppedImage) {
             //set banner
@@ -102,7 +109,6 @@ export const useUploadBanner = ({ form }: Props) => {
             handleClose();
         }
     }
-
 
     return {
         handleFileChange,

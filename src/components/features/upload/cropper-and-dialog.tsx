@@ -27,11 +27,11 @@ export const UploadBanner = ({ form }: Props) => {
     return (
         <>
             <div>
-                <Label htmlFor="logoUrl">Company Logo</Label>
+                <Label htmlFor="banner">Company Banner</Label>
                 <div className="mt-2">
                     <div className="flex items-center justify-center w-full">
                         <label
-                            htmlFor="logoUrl"
+                            htmlFor="banner"
                             className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed rounded-lg cursor-pointer bg-gray-50 dark:hover:bg-gray-800 dark:bg-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:hover:border-gray-500"
                         >
 
@@ -40,7 +40,7 @@ export const UploadBanner = ({ form }: Props) => {
                                 <p className="text-xs text-gray-500 dark:text-gray-400">SVG, PNG, JPG or GIF</p>
                             </div>
                             <input
-                                id="logoUrl"
+                                id="banner"
                                 type="file"
                                 className="hidden"
                                 accept="image/*"

@@ -4,14 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 
 import { Button } from "@/components/ui/button"
-import {
-    Form,
-    FormControl,
-    FormField,
-    FormItem,
-    FormLabel,
-    FormMessage,
-} from "@/components/ui/form"
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { createCompanySchema, CreateCompanySchema } from "@/schemas/forms/form-1.schema"
@@ -21,9 +14,8 @@ import { UploadBanner } from "../upload/cropper-and-dialog"
 import { useCompanyStore } from "@/hooks/use-company"
 import { UploadLogo } from "../upload/logo"
 
-export function Form1() {
 
-    const { setShowPreview, setCompany } = useCompanyStore()
+export const Form1Edit = () => {
 
     const [socialLinksInput, setSocialLinksInput] = useState(""); // Estado local para el input de servicio
 
@@ -41,7 +33,6 @@ export function Form1() {
         form.setValue("socialLinks", updateSocialLink);
     };
 
-
     const form = useForm<CreateCompanySchema>({
         resolver: zodResolver(createCompanySchema),
         defaultValues: {
@@ -56,37 +47,22 @@ export function Form1() {
         },
     })
 
+    const editCompanySubmit = async (data: CreateCompanySchema) => {
 
-    function onShowPreview() {
-        if (!form.formState.isValid) return
-        setCompany({
-            name: form.getValues("name"),
-            description: form.getValues("description"),
-            industry: form.getValues("industry"),
-            phone: form.getValues("phone"),
-            address: form.getValues("address"),
-            website: form.getValues("website"),
-            isVerified: form.getValues("isVerified"),
-            socialLinks: form.getValues("socialLinks"),
-            logoUrl: form.getValues("logoUrl"),
-            bannerUrl: form.getValues("bannerUrl"),
-        })
-        setShowPreview(true)
     }
-
 
     return (
         <Card className="bg-sidebar">
 
             <CardHeader>
-                <CardTitle>Crear una empresa</CardTitle>
+                <CardTitle>Editar una empresa</CardTitle>
                 <CardDescription>
-                    Crea una empresa nueva en unos clics.
+                    Edita una empresa nueva en unos clics.
                 </CardDescription>
             </CardHeader>
             <Form {...form}>
                 <form
-                    onSubmit={form.handleSubmit(onShowPreview)}
+                    onSubmit={form.handleSubmit(editCompanySubmit)}
                 >
                     <CardContent>
                         <div className="grid w-full items-center gap-4 space-y-2">
@@ -228,8 +204,7 @@ export function Form1() {
                     <CardFooter className="flex justify-between">
                         <Button
                             disabled={!form.formState.isValid}
-                        >Crear preview</Button>
-
+                        >Editar preview</Button>
                     </CardFooter>
                 </form>
             </Form>
