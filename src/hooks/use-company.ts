@@ -1,10 +1,10 @@
-import { CreateCompanySchema } from '@/schemas/forms/form-1.schema'
+import { CompanyReponse } from '@/types'
 import { create } from 'zustand'
 
 
 type Store = {
-    company: CreateCompanySchema
-    setCompany: (company: CreateCompanySchema) => void
+    company: CompanyReponse
+    setCompany: (company: CompanyReponse) => void
     showPreview: boolean
     setShowPreview: (showPreview: boolean) => void
 }
@@ -19,10 +19,15 @@ export const useCompanyStore = create<Store>()((set) => ({
         website: "",
         isVerified: false,
         socialLinks: [],
-        logoUrl: undefined,
-        bannerUrl: undefined,
+        logoUrl: null,
+        bannerUrl: null,
+        isActive: false,
+        userId: "",
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        id: "",
     },
-    setCompany: (company: CreateCompanySchema) => set({ company }),
+    setCompany: (company: CompanyReponse) => set({ company }),
     showPreview: false,
     setShowPreview: (showPreview: boolean) => set({ showPreview }),
 }))

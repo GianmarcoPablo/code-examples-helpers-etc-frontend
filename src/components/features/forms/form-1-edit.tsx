@@ -2,22 +2,31 @@
 
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
-
 import { Button } from "@/components/ui/button"
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, } from "@/components/ui/form"
+import {
+    Form,
+    FormControl,
+    FormField,
+    FormItem,
+    FormLabel,
+    FormMessage,
+} from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import { createCompanySchema, CreateCompanySchema } from "@/schemas/forms/form-1.schema"
+import { EditCompanySchema, editCompanySchema } from "@/schemas/forms/form-1-edit.schema"
 import { Textarea } from "@/components/ui/textarea"
 import { useState } from "react"
 import { UploadBanner } from "../upload/cropper-and-dialog"
-import { useCompanyStore } from "@/hooks/use-company"
 import { UploadLogo } from "../upload/logo"
+import { adaptCompanyData } from "@/lib/utils"
+import { CompanyReponse } from "@/types"
 
+interface Props {
+    company: CompanyReponse;
+}
 
-export const Form1Edit = () => {
-
-    const [socialLinksInput, setSocialLinksInput] = useState(""); // Estado local para el input de servicio
+export function Form1Edit({ company }: Props) {
+    const [socialLinksInput, setSocialLinksInput] = useState("");
 
     const addSocialLink = () => {
         const currentServices = form.getValues("socialLinks");
@@ -33,37 +42,27 @@ export const Form1Edit = () => {
         form.setValue("socialLinks", updateSocialLink);
     };
 
-    const form = useForm<CreateCompanySchema>({
-        resolver: zodResolver(createCompanySchema),
-        defaultValues: {
-            name: "",
-            description: "",
-            industry: "",
-            phone: "",
-            address: "",
-            website: "",
-            isVerified: false,
-            socialLinks: [],
-        },
-    })
+    const form = useForm<EditCompanySchema>({
+        resolver: zodResolver(editCompanySchema),
+        defaultValues: adaptCompanyData(company), // Adapta los datos antes de usarlos
+    });
 
-    const editCompanySubmit = async (data: CreateCompanySchema) => {
+    const editCompanySubmit = async (data: EditCompanySchema) => {
+        console.log(data);
+    };
 
-    }
+    console.log({ values: form.getValues() })
 
     return (
         <Card className="bg-sidebar">
-
             <CardHeader>
-                <CardTitle>Editar una empresa</CardTitle>
+                <CardTitle>Crear una empresa</CardTitle>
                 <CardDescription>
-                    Edita una empresa nueva en unos clics.
+                    Crea una empresa nueva en unos clics.
                 </CardDescription>
             </CardHeader>
             <Form {...form}>
-                <form
-                    onSubmit={form.handleSubmit(editCompanySubmit)}
-                >
+                <form onSubmit={form.handleSubmit(editCompanySubmit)}>
                     <CardContent>
                         <div className="grid w-full items-center gap-4 space-y-2">
                             <div className="grid grid-cols-2 gap-x-4">
@@ -113,8 +112,14 @@ export const Form1Edit = () => {
                                 )}
                             />
                             <div className="grid gap-6 my-3 md:grid-cols-2">
-                                <UploadBanner form={form} />
-                                <UploadLogo form={form} />
+                                <UploadBanner<EditCompanySchema>
+                                    form={form}
+                                    defaultValue={company.bannerUrl || undefined} // Convierte `null` en `undefined`
+                                />
+                                <UploadLogo<EditCompanySchema>
+                                    form={form}
+                                    defaultValue={company.logoUrl || undefined} // Convierte `null` en `undefined`
+                                />
                             </div>
                             <div className="grid gap-6 my-3 md:grid-cols-2">
                                 <FormField
@@ -177,12 +182,10 @@ export const Form1Edit = () => {
                                             </Button>
                                         </div>
                                         <FormMessage />
-
                                         <ol className="mt-3 space-y-2 list-decimal">
                                             {form?.watch("socialLinks")?.map((link: string | undefined, index: number) => (
                                                 <li key={index + 1} className="flex justify-between items-center">
                                                     <span>{index + 1}. {link}</span>
-
                                                     <Button
                                                         type="button"
                                                         variant="destructive"
@@ -196,18 +199,13 @@ export const Form1Edit = () => {
                                     </FormItem>
                                 )}
                             />
-
-
                         </div>
-
                     </CardContent>
                     <CardFooter className="flex justify-between">
-                        <Button
-                            disabled={!form.formState.isValid}
-                        >Editar preview</Button>
+                        <Button disabled={!form.formState.isValid}>Crear preview</Button>
                     </CardFooter>
                 </form>
             </Form>
         </Card>
-    )
+    );
 }

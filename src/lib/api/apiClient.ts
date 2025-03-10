@@ -29,7 +29,6 @@ export const apiClient = async <T>(endpoint: string, options: FetchOptions = {})
     }
 
     try {
-        console.log(rest.body)
 
         const response = await fetch(`${apiBackendUrl}${endpoint}`, {
             ...rest,
@@ -38,7 +37,6 @@ export const apiClient = async <T>(endpoint: string, options: FetchOptions = {})
 
         if (!response.ok) {
             const error = await response.json();
-            console.log(error.error.issues)
             return {
                 data: null,
                 error: {

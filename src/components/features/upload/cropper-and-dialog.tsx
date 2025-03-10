@@ -1,7 +1,7 @@
-"use client"
+"use client";
 import "cropperjs/dist/cropper.css";
 import Cropper from "react-cropper";
-import { Upload } from 'lucide-react';
+import { Upload, CheckCircle2 } from "lucide-react";
 import { Button } from '@/components/ui/button';
 import { UseFormReturn } from 'react-hook-form';
 import { useUploadBanner } from "@/hooks/use-upload-banner";
@@ -12,17 +12,39 @@ import {
     DialogHeader,
     DialogTitle,
 } from "@/components/ui/dialog";
-import { CreateCompanySchema } from "@/schemas/forms/form-1.schema";
 import { Label } from "@/components/ui/label";
+import { useEffect, useState } from "react";
 
-interface Props {
-    form: UseFormReturn<CreateCompanySchema>
+interface Props<T extends { bannerUrl?: string | File }> {
+    form: UseFormReturn<T>;
+    defaultValue?: string | File;
 }
 
-export const UploadBanner = ({ form }: Props) => {
+export const UploadBanner = <T extends { bannerUrl?: string | File }>({
+    form,
+    defaultValue,
+}: Props<T>) => {
+    const {
+        handleFileChange,
+        handleCrop,
+        handleAcceptCrop,
+        cropperRef,
+        image,
+        croppedImage,
+        open,
+        setOpen,
+        MIN_HEIGHT,
+        MIN_WIDTH,
+    } = useUploadBanner({ form });
 
-    const { handleFileChange, handleCrop, handleAcceptCrop, cropperRef, image, croppedImage, open, setOpen, MIN_HEIGHT, MIN_WIDTH } = useUploadBanner({ form });
+    const [hasBanner, setHasBanner] = useState(false);
 
+    // Comprueba si hay un banner predeterminado o uno seleccionado
+    useEffect(() => {
+        if (defaultValue || form.watch("bannerUrl" as any)) {
+            setHasBanner(true);
+        }
+    }, [defaultValue, form]);
 
     return (
         <>
@@ -32,26 +54,41 @@ export const UploadBanner = ({ form }: Props) => {
                     <div className="flex items-center justify-center w-full">
                         <label
                             htmlFor="banner"
-                            className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed rounded-lg cursor-pointer bg-gray-50 dark:hover:bg-gray-800 dark:bg-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:hover:border-gray-500"
+                            className={`flex flex-col items-center justify-center w-full h-32 border-2 border-dashed rounded-lg cursor-pointer bg-gray-50 dark:hover:bg-gray-800 dark:bg-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:hover:border-gray-500 ${hasBanner ? "border-green-500" : ""
+                                }`}
                         >
-
                             <div className="flex flex-col items-center justify-center pt-5 pb-6">
-                                <Upload className="w-8 h-8 mb-4 text-gray-500 dark:text-gray-400" />
-                                <p className="text-xs text-gray-500 dark:text-gray-400">SVG, PNG, JPG or GIF</p>
+                                {hasBanner ? (
+                                    <>
+                                        <CheckCircle2 className="w-8 h-8 mb-2 text-green-500" />
+                                        <p className="text-sm text-green-500">Imagen seleccionada</p>
+                                        <p className="text-xs text-gray-500 dark:text-gray-400">
+                                            Haz clic para cambiar
+                                        </p>
+                                    </>
+                                ) : (
+                                    <>
+                                        <Upload className="w-8 h-8 mb-4 text-gray-500 dark:text-gray-400" />
+                                        <p className="text-xs text-gray-500 dark:text-gray-400">
+                                            SVG, PNG, JPG o GIF
+                                        </p>
+                                    </>
+                                )}
                             </div>
                             <input
                                 id="banner"
                                 type="file"
                                 className="hidden"
                                 accept="image/*"
-                                onChange={handleFileChange}
+                                onChange={(e) => {
+                                    handleFileChange(e);
+                                    setHasBanner(true); // Marca como seleccionado
+                                }}
                             />
                         </label>
                     </div>
                 </div>
             </div>
-
-
 
             <Dialog open={open} onOpenChange={setOpen}>
                 <DialogContent className="w-full max-w-2xl">
@@ -84,11 +121,6 @@ export const UploadBanner = ({ form }: Props) => {
                     {croppedImage && (
                         <div className="border p-4 rounded-md shadow-md flex flex-col items-center">
                             <h3 className="text-center font-semibold mb-2">Vista Previa del Banner</h3>
-                            <img
-                                src={croppedImage}
-                                alt="Cropped Banner"
-                                className="w-[728px] h-[134px] object-cover rounded-md"
-                            />
                             <Button
                                 onClick={handleAcceptCrop}
                                 className="mt-4 w-full"
@@ -100,5 +132,5 @@ export const UploadBanner = ({ form }: Props) => {
                 </DialogContent>
             </Dialog>
         </>
-    )
-}
+    );
+};

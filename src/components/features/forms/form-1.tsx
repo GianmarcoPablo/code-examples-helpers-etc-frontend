@@ -137,8 +137,8 @@ export function Form1() {
                                 )}
                             />
                             <div className="grid gap-6 my-3 md:grid-cols-2">
-                                <UploadBanner form={form} />
-                                <UploadLogo form={form} />
+                                <UploadBanner<CreateCompanySchema> form={form} />
+                                <UploadLogo<CreateCompanySchema> form={form} />
                             </div>
                             <div className="grid gap-6 my-3 md:grid-cols-2">
                                 <FormField

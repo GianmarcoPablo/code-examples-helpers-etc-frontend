@@ -8,7 +8,7 @@ const page = () => {
                 <Form1 />
             </div>
             <div>
-                <Form1Preview />
+                <Form1Preview  />
             </div>
         </div>
     )

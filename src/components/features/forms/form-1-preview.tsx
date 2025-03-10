@@ -13,14 +13,44 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { useState } from "react"
+import { useState, useEffect } from "react"
+import { CompanyReponse } from "@/types"
 
-export const Form1Preview = () => {
+interface Props {
+    defaultCompany?: CompanyReponse
+}
 
-    const { showPreview, company } = useCompanyStore()
+
+export const Form1Preview = ({ defaultCompany }: Props) => {
+
+
+    const { showPreview, company, setCompany, setShowPreview } = useCompanyStore()
     const [position, setPosition] = useState("bottom")
 
-    if (!showPreview) return <NotPreview />
+    useEffect(() => {
+        if (defaultCompany) {
+            setCompany({
+                name: defaultCompany.name,
+                description: defaultCompany.description,
+                industry: defaultCompany.industry,
+                phone: defaultCompany.phone,
+                address: defaultCompany.address,
+                website: defaultCompany.website,
+                isVerified: defaultCompany.isVerified,
+                socialLinks: defaultCompany.socialLinks || [],
+                logoUrl: defaultCompany.logoUrl || null,
+                bannerUrl: defaultCompany.bannerUrl || null,
+                isActive: defaultCompany.isActive,
+                userId: defaultCompany.userId,
+                createdAt: defaultCompany.createdAt,
+                updatedAt: defaultCompany.updatedAt,
+                id: defaultCompany.id,
+            });
+            // Mostrar el preview automáticamente
+            setShowPreview(true);
+        }
+    }, [defaultCompany, setCompany, setShowPreview]);
+
 
     // Función para convertir File a URL
     const getValidSrc = (src: string | File | undefined) => {
@@ -28,8 +58,11 @@ export const Form1Preview = () => {
         return src instanceof File ? URL.createObjectURL(src) : src
     }
 
-    const banner = getValidSrc(company.bannerUrl) ?? "/banner-default.svg"
-    const logo = getValidSrc(company.logoUrl) ?? "/logo-default.svg"
+    const banner = getValidSrc(company.bannerUrl!) ?? "/banner-default.svg"
+    const logo = getValidSrc(company.logoUrl!) ?? "/logo-default.svg"
+
+    if (!showPreview) return <p>Loading...</p>
+
 
     return (
         <>
