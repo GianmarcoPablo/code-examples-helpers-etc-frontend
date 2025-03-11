@@ -34,7 +34,10 @@ export const editCompanySchema = z.object({
     address: z.string().optional(),
     industry: z.string().min(1, "La industria es obligatoria"),
     isVerified: z.boolean().optional(),
-    socialLinks: z.array(z.string().url("Debe ser una URL válida")).optional(),
+    socialLinks: z
+        .array(z.string().url("Debe ser una URL válida").optional())
+        .optional()
+        .default([]),  // Permite que el array esté vacío sin errores
     website: z.string().url("Debe ser una URL válida").optional(),
 });
 

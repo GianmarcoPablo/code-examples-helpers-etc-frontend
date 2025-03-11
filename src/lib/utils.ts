@@ -7,17 +7,17 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
 
-export const adaptCompanyData = (company: CompanyReponse): EditCompanySchema => {
+export const adaptCompanyData = (company: CompanyReponse) => {
   return {
     name: company.name,
     description: company.description,
     industry: company.industry,
-    bannerUrl: company.bannerUrl || undefined, // Convierte `null` en `undefined`
-    logoUrl: company.logoUrl || undefined, // Convierte `null` en `undefined`
-    phone: company.phone || undefined, // Convierte `null` en `undefined`
-    address: company.address || undefined, // Convierte `null` en `undefined`
+    phone: company.phone || "",
+    address: company.address || "",
+    website: company.website || "",
     isVerified: company.isVerified,
-    socialLinks: company.socialLinks || [], // Asegúrate de que `socialLinks` sea un array
-    website: company.website || undefined, // Convierte `null` en `undefined`
+    socialLinks: company.socialLinks || [],
+    logoUrl: company.logoUrl || undefined,
+    bannerUrl: company.bannerUrl || undefined,
   };
 };

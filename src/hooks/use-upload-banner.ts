@@ -1,104 +1,95 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
-import { ReactCropperElement } from 'react-cropper';
-import { UseFormReturn } from 'react-hook-form';
+import { useState, useRef } from "react";
 import { toast } from "sonner";
+import { UseFormReturn } from "react-hook-form";
 
-const MIN_WIDTH = 1128;
-const MIN_HEIGHT = 191;
-
-interface Props<T extends { bannerUrl?: string | File }> {
-    form: UseFormReturn<T>;
+interface UseUploadBannerProps {
+    form: UseFormReturn<any>;
 }
 
-export const useUploadBanner = <T extends { bannerUrl?: string | File }>({ form }: Props<T>) => {
-    const [open, setOpen] = useState(false);
+export const useUploadBanner = ({ form }: UseUploadBannerProps) => {
     const [image, setImage] = useState<string | null>(null);
     const [croppedImage, setCroppedImage] = useState<string | null>(null);
-    const cropperRef = useRef<ReactCropperElement>(null);
+    const [open, setOpen] = useState(false);
+    const cropperRef = useRef<any>(null);
 
-    const handleFileChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    const MIN_WIDTH = 804;
+    const MIN_HEIGHT = 134;
+
+    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
-        if (!file) return toast("No se pudo cargar el archivo.");
+        if (!file) return;
 
         if (!file.type.startsWith("image/")) {
-            toast("Solo se permiten archivos de imagen.");
+            toast.error("Solo se permiten archivos de imagen");
             return;
         }
 
-        const objectUrl = URL.createObjectURL(file);
         const img = new Image();
-        img.src = objectUrl;
+        const objectUrl = URL.createObjectURL(file);
 
         img.onload = () => {
             if (img.width < MIN_WIDTH || img.height < MIN_HEIGHT) {
-                toast(`El ancho mínimo es ${MIN_WIDTH}px y la altura mínima es ${MIN_HEIGHT}px.`);
+                toast.error(`El tamaño mínimo es ${MIN_WIDTH}x${MIN_HEIGHT} píxeles`);
                 URL.revokeObjectURL(objectUrl);
                 return;
             }
 
-            setOpen(true);
             setImage(objectUrl);
+            setOpen(true);
         };
 
         img.onerror = () => {
-            toast("No se pudo cargar la imagen.");
+            toast.error("No se pudo cargar la imagen");
             URL.revokeObjectURL(objectUrl);
         };
-    }, []);
 
-    const handleCrop = useCallback(() => {
-        const cropper = cropperRef.current?.cropper;
-        if (!cropper) return;
+        img.src = objectUrl;
+    };
 
-        const croppedCanvas = cropper.getCroppedCanvas({
-            width: MIN_WIDTH,
-            height: MIN_HEIGHT,
+    const handleCrop = () => {
+        if (!cropperRef.current) return;
+
+        const cropper = cropperRef.current.cropper;
+        const canvas = cropper.getCroppedCanvas({
+            minWidth: MIN_WIDTH,
+            minHeight: MIN_HEIGHT,
         });
 
-        croppedCanvas?.toBlob(
-            (blob) => {
-                if (blob) {
-                    const file = new File([blob], "banner.png", { type: "image/png" });
-                    setCroppedImage(URL.createObjectURL(blob));
-                    form.setValue("bannerUrl" as any, file as any);
-                } else {
-                    toast("No se pudo recortar la imagen.");
+        if (canvas) {
+            const croppedDataUrl = canvas.toDataURL();
+            setCroppedImage(croppedDataUrl);
+
+            canvas.toBlob((blob: Blob | null) => {
+                if (!blob) {
+                    toast.error("Error al procesar la imagen");
+                    return;
                 }
-            },
-            "image/png",
-        );
-    }, [form]);
+
+                const file = new File([blob], "banner.jpg", {
+                    type: "image/jpeg",
+                });
+
+                form.setValue("bannerUrl", file, { shouldValidate: true });
+            });
+        }
+    };
 
     const handleAcceptCrop = () => {
         setOpen(false);
-    };
-
-    const handleClose = () => {
-        if (image) URL.revokeObjectURL(image);
-        if (croppedImage) URL.revokeObjectURL(croppedImage);
         setImage(null);
         setCroppedImage(null);
-        form.setValue("bannerUrl" as any, null as any);
-        setOpen(false);
+        toast.success("Banner actualizado correctamente");
     };
-
-    useEffect(() => {
-        return () => {
-            if (image) URL.revokeObjectURL(image);
-            if (croppedImage) URL.revokeObjectURL(croppedImage);
-        };
-    }, [image, croppedImage]);
 
     return {
         handleFileChange,
         handleCrop,
         handleAcceptCrop,
-        handleClose,
+        cropperRef,
         image,
         croppedImage,
         open,
         setOpen,
-        cropperRef,
         MIN_WIDTH,
         MIN_HEIGHT,
     };
