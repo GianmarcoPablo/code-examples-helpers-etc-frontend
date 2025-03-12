@@ -1,7 +1,7 @@
 "use client";
 import "cropperjs/dist/cropper.css";
 import Cropper from "react-cropper";
-import { Upload, CheckCircle2 } from "lucide-react";
+import { Upload, CheckCircle2, RefreshCw } from "lucide-react";
 import { Button } from '@/components/ui/button';
 import { UseFormReturn } from 'react-hook-form';
 import { useUploadBanner } from "@/hooks/use-upload-banner";
@@ -62,9 +62,10 @@ export const UploadBanner = <T extends { bannerUrl?: string | File }>({
                                     <>
                                         <CheckCircle2 className="w-8 h-8 mb-2 text-green-500" />
                                         <p className="text-sm text-green-500">Imagen seleccionada</p>
-                                        <p className="text-xs text-gray-500 dark:text-gray-400">
-                                            Haz clic para cambiar
-                                        </p>
+                                        <div className="flex items-center text-xs text-gray-500 dark:text-gray-400 mt-2">
+                                            <RefreshCw className="w-4 h-4 mr-1" />
+                                            <span>Cambiar imagen</span>
+                                        </div>
                                     </>
                                 ) : (
                                     <>
@@ -121,6 +122,13 @@ export const UploadBanner = <T extends { bannerUrl?: string | File }>({
                     {croppedImage && (
                         <div className="border p-4 rounded-md shadow-md flex flex-col items-center">
                             <h3 className="text-center font-semibold mb-2">Vista Previa del Banner</h3>
+                            <div className="w-full h-24 mb-4">
+                                <img
+                                    src={croppedImage}
+                                    alt="Vista previa"
+                                    className="w-full h-full object-cover rounded-md"
+                                />
+                            </div>
                             <Button
                                 onClick={handleAcceptCrop}
                                 className="mt-4 w-full"

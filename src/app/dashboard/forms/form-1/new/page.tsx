@@ -1,3 +1,4 @@
+"use client"
 import { Form1 } from "@/components/features/forms/form-1"
 import { Form1Preview } from "@/components/features/forms/form-1-preview"
 import { useState } from "react"
@@ -9,6 +10,8 @@ export default function CreateCompanyPage() {
     const router = useRouter()
     const { company, resetCompany } = useCompanyStore()
     const [isSubmitting, setIsSubmitting] = useState(false)
+
+
 
     const handleCreateCompany = async () => {
         try {

@@ -35,6 +35,7 @@ export const Form1Preview = ({ defaultCompany, onSubmit }: Props) => {
         }
     }, [defaultCompany, setCompany, setShowPreview]);
 
+
     // Función para convertir File a URL
     const getValidSrc = (src: string | File | undefined | null) => {
         if (!src) return undefined

@@ -9,6 +9,7 @@ interface Props {
 }
 
 export function Form1Edit({ company }: Props) {
+    
     const handleEditSubmit = async (data: EditCompanySchema) => {
         console.log("Datos actualizados:", data);
         // Aquí implementarías la lógica para enviar los datos al backend
