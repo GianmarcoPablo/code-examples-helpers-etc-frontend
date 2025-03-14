@@ -5,6 +5,7 @@ import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { useCompanyStore } from "@/hooks/use-company"
 import { toast } from "sonner"
+import { form1Create } from "@/lib/api/forms/form-1"
 
 export default function CreateCompanyPage() {
     const router = useRouter()
@@ -15,21 +16,39 @@ export default function CreateCompanyPage() {
 
     const handleCreateCompany = async () => {
         try {
-            setIsSubmitting(true)
+            setIsSubmitting(true);
 
-            // Código para enviar los datos al backend
-            // const response = await createCompany(company)
+            const formData = new FormData();
+            formData.append("name", company.name);
+            formData.append("description", company.description);
+            if (company.bannerUrl) formData.append("bannerUrl", company.bannerUrl);
+            if (company.logoUrl) formData.append("logoUrl", company.logoUrl);
+            if (company.phone) formData.append("phone", company.phone);
+            if (company.address) formData.append("address", company.address);
+            formData.append("industry", company.industry);
+            formData.append("isVerified", String(company.isVerified));
+            if (company.website) formData.append("website", company.website);
 
-            toast.success("Empresa creada exitosamente")
-            resetCompany()
-            // router.push(`/companies/${response.id}`)
+            // Agregar `socialLinks` si existen
+            if (company.socialLinks.length > 0) {
+                formData.append("socialLinks", JSON.stringify(company.socialLinks));
+            }
+
+            console.log("Enviando datos:", Object.fromEntries(formData.entries()));
+
+            const response = await form1Create(formData);
+            console.log({ response });
+
+            toast.success("Empresa creada exitosamente");
+            resetCompany();
         } catch (error) {
-            toast.error("Error al crear la empresa")
-            console.error(error)
+            toast.error("Error al crear la empresa");
+            console.error(error);
         } finally {
-            setIsSubmitting(false)
+            setIsSubmitting(false);
         }
-    }
+    };
+
 
     return (
         <div className="container mx-auto py-8">
